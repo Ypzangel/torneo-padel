@@ -1,12 +1,49 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Torneo V06 - El Rincón del Pádel</title>
-  <!-- El resto del contenido ya está en el canvas, simulado aquí como string -->
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 20px; color: #333; }
+    h1, h2 { color: #C8102E; }
+    .grupo, .fase, .resumen { background: #fff; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #C8102E; color: #fff; }
+    input { width: 95%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; }
+    .stats { margin-top: 10px; font-size: 0.9em; background: #eef; padding: 8px; border-radius: 6px; }
+    .nombres-container { margin-bottom: 20px; }
+    button { margin-top: 10px; padding: 8px 16px; background-color: #C8102E; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
 </head>
 <body>
-  <!-- Aquí iría el contenido completo ya incluido en el documento del canvas -->
+  <h1>Torneo V06 - El Rincón del Pádel</h1>
+  <p><strong>Formato:</strong> 4 grupos de 3 parejas | Fase de grupos + Semis + Final + Consolación</p>
+  <div class="nombres-container" id="nombresContainer"></div>
+  <div class="grupo">
+    <h2>Fase de Grupos</h2>
+    <div id="grupos"></div>
+  </div>
+  <div class="fase">
+    <h2>Semifinales</h2>
+    <table><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr><tr><td><input id="semi1_p1" readonly></td><td><input id="semi1_p2" readonly></td><td><input id="res_semi1"></td><td><input id="win_semi1" readonly></td></tr><tr><td><input id="semi2_p1" readonly></td><td><input id="semi2_p2" readonly></td><td><input id="res_semi2"></td><td><input id="win_semi2" readonly></td></tr></table>
+  </div>
+  <div class="fase">
+    <h2>Final</h2>
+    <table><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr><tr><td><input id="final_p1" readonly></td><td><input id="final_p2" readonly></td><td><input id="res_final"></td><td><input id="win_final" readonly></td></tr></table>
+  </div>
+  <div class="fase">
+    <h2>Cuadro de Consolación</h2>
+    <table><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr><tr><td><input id="csf1_p1" readonly></td><td><input id="csf1_p2" readonly></td><td><input id="res_csf1"></td><td><input id="win_csf1" readonly></td></tr><tr><td><input id="csf2_p1" readonly></td><td><input id="csf2_p2" readonly></td><td><input id="res_csf2"></td><td><input id="win_csf2" readonly></td></tr></table>
+    <h3>Final de Consolación</h3>
+    <table><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr><tr><td><input id="cons_p1" readonly></td><td><input id="cons_p2" readonly></td><td><input id="res_cons"></td><td><input id="win_cons" readonly></td></tr></table>
+  </div>
+  <div class="resumen">
+    <h2>Tabla General de Juegos por Pareja</h2>
+    <table id="tablaResumen"><tr><th>Pareja</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr></table>
+    <button onclick="resetTorneo()">Reiniciar Torneo</button>
+  </div>
 </body>
 </html>
