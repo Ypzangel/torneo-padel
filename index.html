@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Torneo V06 - El Rincón del Pádel</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 20px; color: #333; }
+    h1, h2 { color: #C8102E; }
+    .grupo, .fase, .resumen { background: #fff; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #C8102E; color: #fff; }
+    input { width: 95%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; }
+    .stats { margin-top: 10px; font-size: 0.9em; background: #eef; padding: 8px; border-radius: 6px; }
+    .nombres-container { margin-bottom: 20px; }
+    button { margin-top: 10px; padding: 8px 16px; background-color: #C8102E; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Torneo V06 - El Rincón del Pádel</h1>
+  <p><strong>Formato:</strong> 4 grupos de 3 parejas | Fase de grupos + Semis + Final + Consolación</p>
+  <div class="nombres-container" id="nombresContainer"></div>
+  <div class="grupo">
+    <h2>Fase de Grupos</h2>
+    <div id="grupos"></div>
+  </div>
+  <div class="fase">
+    <h2>Semifinales</h2>
+    <table><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr><tr><td><input id="semi1_p1" readonly></td><td><input id="semi1_p2" readonly></td><td><input id="res_semi1"></td><td><input id="win_semi1" readonly></td></tr><tr><td><input id="semi2_p1" readonly></td><td><input id="semi2_p2" readonly></td><td><input id="res_semi2"></td><td><input id="win_semi2" readonly></td></tr></table>
+  </div>
+  <div class="fase">
+    <h2>Final</h2>
+    <table><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr><tr><td><input id="final_p1" readonly></td><td><input id="final_p2" readonly></td><td><input id="res_final"></td><td><input id="win_final" readonly></td></tr></table>
+  </div>
+  <div class="fase">
+    <h2>Cuadro de Consolación</h2>
+    <table><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr><tr><td><input id="csf1_p1" readonly></td><td><input id="csf1_p2" readonly></td><td><input id="res_csf1"></td><td><input id="win_csf1" readonly></td></tr><tr><td><input id="csf2_p1" readonly></td><td><input id="csf2_p2" readonly></td><td><input id="res_csf2"></td><td><input id="win_csf2" readonly></td></tr></table>
+    <h3>Final de Consolación</h3>
+    <table><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr><tr><td><input id="cons_p1" readonly></td><td><input id="cons_p2" readonly></td><td><input id="res_cons"></td><td><input id="win_cons" readonly></td></tr></table>
+  </div>
+  <div class="resumen">
+    <h2>Tabla General de Juegos por Pareja</h2>
+    <table id="tablaResumen"><tr><th>Pareja</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr></table>
+    <button onclick="resetTorneo()">Reiniciar Torneo</button>
+  </div>
+  <script>
+// Variables globales
+const nombresJugadores = {};
+const resumenStats = {};
+const ganadoresGrupo = {};
+
+function syncNombre(idBase, inputId) {
+  const input = document.getElementById(inputId);
+  input.addEventListener('input', () => {
+    nombresJugadores[idBase] = input.value;
+    const campos = document.querySelectorAll(`[data-sync="${idBase}"]`);
+    campos.forEach(campo => campo.value = input.value);
+    actualizarResumen();
+  });
+}
+
+function generarGrupo(id) {
+  let html = `<h3>Grupo ${id}</h3><table><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>`;
+  const partidos = [["A", "B"], ["B", "C"], ["A", "C"]];
+  partidos.forEach((match, index) => {
+    const p1id = `g${id}_${index}_p1`;
+    const p2id = `g${id}_${index}_p2`;
+    const resId = `g${id}_${index}_res`;
+    const winId = `g${id}_${index}_win`;
+    const statsId = `g${id}_${index}_stats`;
+
+    const sync1 = `G${id}-${match[0]}`;
+    const sync2 = `G${id}-${match[1]}`;
+
+    html += `<tr>
+      <td><input id='${p1id}' data-sync='${sync1}' placeholder='${id}-${match[0]}'></td>
+      <td><input id='${p2id}' data-sync='${sync2}' placeholder='${id}-${match[1]}'></td>
+      <td><input id='${resId}' oninput="calcularGanador('${p1id}', '${p2id}', '${resId}', '${winId}', '${statsId}', ${id})"></td>
+      <td><input id='${winId}' readonly></td>
+    </tr>
+    <tr><td colspan='4'><div class='stats' id='${statsId}'></div></td></tr>`;
+  });
+  html += `</table>`;
+  return html;
+}
+
+function calcularGanador(id1, id2, idRes, idWin, idStats, grupoId) {
+  const p1 = document.getElementById(id1).value.trim();
+  const p2 = document.getElementById(id2).value.trim();
+  const res = document.getElementById(idRes).value.trim();
+  const win = document.getElementById(idWin);
+  const stats = document.getElementById(idStats);
+
+  const set = res.split(/[-/ ]+/).map(n => parseInt(n));
+  if (set.length >= 2 && !set.includes(NaN)) {
+    let p1wins = 0, p2wins = 0;
+    let p1games = 0, p2games = 0;
+    for (let i = 0; i < set.length; i += 2) {
+      const s1 = set[i], s2 = set[i + 1];
+      p1games += s1;
+      p2games += s2;
+      if (s1 > s2) p1wins++;
+      else if (s1 < s2) p2wins++;
+    }
+    win.value = p1wins > p2wins ? p1 : p2;
+    stats.innerText = `${p1}: ${p1games} ganados / ${p2games} perdidos | ${p2}: ${p2games} ganados / ${p1games} perdidos | Diferencia: ${p1games - p2games}`;
+    actualizarEstadisticaResumen(p1, p1games, p2games);
+    actualizarEstadisticaResumen(p2, p2games, p1games);
+    actualizarResumen();
+    if (!ganadoresGrupo[`G${grupoId}`]) ganadoresGrupo[`G${grupoId}`] = {};
+    ganadoresGrupo[`G${grupoId}`][p1] = resumenStats[p1];
+    ganadoresGrupo[`G${grupoId}`][p2] = resumenStats[p2];
+    actualizarSemis();
+  } else {
+    win.value = '';
+    stats.innerText = '';
+  }
+}
+
+function actualizarEstadisticaResumen(nombre, ganados, perdidos) {
+  resumenStats[nombre] = { ganados, perdidos };
+}
+
+function actualizarResumen() {
+  const tabla = document.getElementById("tablaResumen");
+  tabla.innerHTML = '<tr><th>Pareja</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr>';
+  for (const pareja in resumenStats) {
+    const g = resumenStats[pareja].ganados;
+    const p = resumenStats[pareja].perdidos;
+    tabla.innerHTML += `<tr><td>${pareja}</td><td>${g}</td><td>${p}</td><td>${g - p}</td></tr>`;
+  }
+}
+
+function actualizarSemis() {
+  const semi1_p1 = document.getElementById("semi1_p1");
+  const semi1_p2 = document.getElementById("semi1_p2");
+  const semi2_p1 = document.getElementById("semi2_p1");
+  const semi2_p2 = document.getElementById("semi2_p2");
+
+  function mejorPareja(grupo) {
+    const grupoStats = ganadoresGrupo[`G${grupo}`];
+    if (!grupoStats) return '';
+    let mejor = null, mejorDiff = -Infinity;
+    for (const jugador in grupoStats) {
+      const diff = grupoStats[jugador].ganados - grupoStats[jugador].perdidos;
+      if (diff > mejorDiff) {
+        mejor = jugador;
+        mejorDiff = diff;
+      }
+    }
+    return mejor;
+  }
+
+  semi1_p1.value = mejorPareja(1);
+  semi1_p2.value = mejorPareja(3);
+  semi2_p1.value = mejorPareja(2);
+  semi2_p2.value = mejorPareja(4);
+}
+
+function generarInputsNombres() {
+  const cont = document.getElementById("nombresContainer");
+  for (let g = 1; g <= 4; g++) {
+    ['A', 'B', 'C'].forEach(letra => {
+      const id = `G${g}-${letra}`;
+      const input = document.createElement('input');
+      input.id = `master_${id}`;
+      input.placeholder = `Nombre pareja ${id}`;
+      input.style = 'margin: 2px 10px 10px 0; width: 220px;';
+      cont.appendChild(input);
+      syncNombre(id, input.id);
+    });
+  }
+}
+
+function resetTorneo() {
+  document.querySelectorAll('input').forEach(i => i.value = '');
+  document.querySelectorAll('.stats').forEach(e => e.innerText = '');
+  document.getElementById("tablaResumen").innerHTML = '<tr><th>Pareja</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr>';
+  Object.keys(nombresJugadores).forEach(k => delete nombresJugadores[k]);
+  Object.keys(resumenStats).forEach(k => delete resumenStats[k]);
+  Object.keys(ganadoresGrupo).forEach(k => delete ganadoresGrupo[k]);
+  generarInputsNombres();
+  const gruposDiv = document.getElementById('grupos');
+  gruposDiv.innerHTML = '';
+  for (let i = 1; i <= 4; i++) {
+    gruposDiv.innerHTML += generarGrupo(i);
+  }
+}
+
+(() => {
+  generarInputsNombres();
+  const gruposDiv = document.getElementById('grupos');
+  for (let i = 1; i <= 4; i++) {
+    gruposDiv.innerHTML += generarGrupo(i);
+  }
+})();
+  </script>
+</body>
+</html>
