@@ -164,13 +164,26 @@ function calcularGanador(id1, id2, idRes, idWin, idStats, grupoId) {
 
 function actualizarResumen() {
   const tabla = document.getElementById("tablaResumen");
-  tabla.innerHTML = '<tr><th>Pareja</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr>';
-  for (const pareja in resumenStats) {
-    const g = resumenStats[pareja].ganados;
-    const p = resumenStats[pareja].perdidos;
-    tabla.innerHTML += `<tr><td>${pareja}</td><td>${g}</td><td>${p}</td><td>${g - p}</td></tr>`;
+  tabla.innerHTML = "<tr><th>Pareja</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr>";
+
+  const datosOrdenados = Object.entries(resumenStats)
+    .map(([pareja, datos]) => {
+      const diferencia = datos.ganados - datos.perdidos;
+      return { pareja, ...datos, diferencia };
+    })
+    .sort((a, b) => {
+      // Ordenar por más ganados, menos perdidos, mayor diferencia
+      if (b.ganados !== a.ganados) return b.ganados - a.ganados;
+      if (a.perdidos !== b.perdidos) return a.perdidos - b.perdidos;
+      return b.diferencia - a.diferencia;
+    });
+
+  for (const item of datosOrdenados) {
+    const row = `<tr><td>${item.pareja}</td><td>${item.ganados}</td><td>${item.perdidos}</td><td>${item.diferencia}</td></tr>`;
+    tabla.innerHTML += row;
   }
 }
+
 
 function actualizarSemifinales() {
   function mejorPareja(grupo) {
