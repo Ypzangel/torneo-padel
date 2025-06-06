@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Torneo V03 - El Rincón del Pádel</title>
+  <title>Torneo - El Rincón del Pádel</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 20px; color: #333; }
     h1, h2 { color: #C8102E; }
@@ -17,7 +17,7 @@
   </style>
 </head>
 <body>
-  <h1>Torneo V03 - El Rincón del Pádel</h1>
+  <h1>Torneo El Rincón del Pádel</h1>
   <p><strong>Formato:</strong> 4 grupos de 3 parejas | Fase de grupos + Semis + Final + Consolación</p>
 
   <div class="nombres-container" id="nombresContainer"></div>
@@ -81,8 +81,10 @@ function syncNombre(idBase, inputId) {
     const campos = document.querySelectorAll(`[data-sync="${idBase}"]`);
     campos.forEach(campo => campo.value = input.value);
     actualizarResumen();
+    rellenarConsolacion(); // ✅ ACTUALIZA LAS SEMIS DE CONSOLACIÓN AL CAMBIAR NOMBRES
   });
 }
+
 
 function generarGrupo(id) {
   let html = `<h3>Grupo ${id}</h3><table><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>`;
