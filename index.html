@@ -124,11 +124,33 @@ function calcularGanador(id1, id2, idRes, idWin, idStats, grupoId) {
       if (s1 > s2) p1wins++;
       else if (s1 < s2) p2wins++;
     }
+
     win.value = p1wins > p2wins ? p1 : p2;
+
+    // Inicializar si no existe
+    if (!resumenStats[p1]) resumenStats[p1] = { ganados: 0, perdidos: 0 };
+    if (!resumenStats[p2]) resumenStats[p2] = { ganados: 0, perdidos: 0 };
+
+    // Restar juegos anteriores si los había
+    const key = `${idRes}_prev`;
+    if (document.getElementById(idRes)[key]) {
+      const [oldG1, oldG2] = document.getElementById(idRes)[key];
+      resumenStats[p1].ganados -= oldG1;
+      resumenStats[p1].perdidos -= oldG2;
+      resumenStats[p2].ganados -= oldG2;
+      resumenStats[p2].perdidos -= oldG1;
+    }
+
+    // Guardar nuevos valores
+    resumenStats[p1].ganados += p1games;
+    resumenStats[p1].perdidos += p2games;
+    resumenStats[p2].ganados += p2games;
+    resumenStats[p2].perdidos += p1games;
+    document.getElementById(idRes)[key] = [p1games, p2games];
+
     stats.innerText = `${p1}: ${p1games} ganados / ${p2games} perdidos | ${p2}: ${p2games} ganados / ${p1games} perdidos | Diferencia: ${p1games - p2games}`;
-    resumenStats[p1] = { ganados: p1games, perdidos: p2games };
-    resumenStats[p2] = { ganados: p2games, perdidos: p1games };
     actualizarResumen();
+
     if (!ganadoresGrupo[`G${grupoId}`]) ganadoresGrupo[`G${grupoId}`] = {};
     ganadoresGrupo[`G${grupoId}`][p1] = resumenStats[p1];
     ganadoresGrupo[`G${grupoId}`][p2] = resumenStats[p2];
@@ -138,6 +160,7 @@ function calcularGanador(id1, id2, idRes, idWin, idStats, grupoId) {
     stats.innerText = '';
   }
 }
+
 
 function actualizarResumen() {
   const tabla = document.getElementById("tablaResumen");
