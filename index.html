@@ -164,25 +164,46 @@ function calcularGanador(id1, id2, idRes, idWin, idStats, grupoId) {
 
 function actualizarResumen() {
   const tabla = document.getElementById("tablaResumen");
-  tabla.innerHTML = "<tr><th>Pareja</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr>";
+  tabla.innerHTML = "";
 
-  const datosOrdenados = Object.entries(resumenStats)
-    .map(([pareja, datos]) => {
-      const diferencia = datos.ganados - datos.perdidos;
-      return { pareja, ...datos, diferencia };
-    })
-    .sort((a, b) => {
-      // Ordenar por más ganados, menos perdidos, mayor diferencia
+  const grupos = { G1: [], G2: [], G3: [], G4: [] };
+
+  for (const grupo in ganadoresGrupo) {
+    const parejas = Object.entries(ganadoresGrupo[grupo]).map(([pareja, datos]) => {
+      return {
+        pareja,
+        ganados: datos.ganados,
+        perdidos: datos.perdidos,
+        diferencia: datos.ganados - datos.perdidos
+      };
+    });
+
+    // Ordenamos las parejas del grupo
+    parejas.sort((a, b) => {
       if (b.ganados !== a.ganados) return b.ganados - a.ganados;
       if (a.perdidos !== b.perdidos) return a.perdidos - b.perdidos;
       return b.diferencia - a.diferencia;
     });
 
-  for (const item of datosOrdenados) {
-    const row = `<tr><td>${item.pareja}</td><td>${item.ganados}</td><td>${item.perdidos}</td><td>${item.diferencia}</td></tr>`;
-    tabla.innerHTML += row;
+    grupos[grupo] = parejas;
+  }
+
+  for (let g = 1; g <= 4; g++) {
+    const grupoId = `G${g}`;
+    tabla.innerHTML += `<tr><th colspan="4">Grupo ${g}</th></tr>`;
+    tabla.innerHTML += `<tr><th>Pareja</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr>`;
+    
+    grupos[grupoId].forEach((item, idx) => {
+      let bgColor = '';
+      if (idx === 0) bgColor = ' style="background-color:#d4edda;"';      // verde claro
+      else if (idx === 1) bgColor = ' style="background-color:#fff3cd;"'; // amarillo claro
+      else bgColor = ' style="background-color:#f8d7da;"';                // rojo claro
+
+      tabla.innerHTML += `<tr${bgColor}><td>${item.pareja}</td><td>${item.ganados}</td><td>${item.perdidos}</td><td>${item.diferencia}</td></tr>`;
+    });
   }
 }
+
 
 
 function actualizarSemifinales() {
