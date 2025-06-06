@@ -44,7 +44,7 @@
   </div>
 
   <div class="fase">
-    <h2>Cuadro Consolación</h2>
+    <h2>Semifinales Cuadro de Consolación</h2>
     <table>
       <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
       <tr><td><input id="cons1_p1" readonly></td><td><input id="cons1_p2" readonly></td><td><input id="cons1_res" oninput="procesarFinal('cons1')"></td><td><input id="cons1_win" readonly></td></tr>
@@ -269,6 +269,50 @@ const gruposDiv = document.getElementById('grupos');
 for (let i = 1; i <= 4; i++) {
   gruposDiv.innerHTML += generarGrupo(i);
 }
+function rellenarConsolacion() {
+  const csfInputs = [
+    document.getElementById("csf1_p1"),
+    document.getElementById("csf1_p2"),
+    document.getElementById("csf2_p1"),
+    document.getElementById("csf2_p2")
+  ];
+
+  // Recoge los terceros de cada grupo (C)
+  let terceros = [];
+  for (let g = 1; g <= 4; g++) {
+    const id = `G${g}-C`;
+    const nombre = document.getElementById(`master_${id}`)?.value;
+    if (nombre) terceros.push(nombre);
+  }
+
+  if (terceros.length === 4) {
+    csfInputs[0].value = terceros[0];
+    csfInputs[1].value = terceros[1];
+    csfInputs[2].value = terceros[2];
+    csfInputs[3].value = terceros[3];
+  }
+}
+
+function calcularGanadorConsolacion() {
+  const r1 = document.getElementById("res_csf1").value;
+  const r2 = document.getElementById("res_csf2").value;
+  const [p1a, p1b] = [document.getElementById("csf1_p1").value, document.getElementById("csf1_p2").value];
+  const [p2a, p2b] = [document.getElementById("csf2_p1").value, document.getElementById("csf2_p2").value];
+
+  const [g1, g2] = r1.split("-").map(n => parseInt(n));
+  const [g3, g4] = r2.split("-").map(n => parseInt(n));
+
+  if (!isNaN(g1) && !isNaN(g2)) {
+    document.getElementById("win_csf1").value = g1 > g2 ? p1a : p1b;
+    document.getElementById("cons_p1").value = g1 > g2 ? p1a : p1b;
+  }
+
+  if (!isNaN(g3) && !isNaN(g4)) {
+    document.getElementById("win_csf2").value = g3 > g4 ? p2a : p2b;
+    document.getElementById("cons_p2").value = g3 > g4 ? p2a : p2b;
+  }
+}
+
 </script>
 </body>
 </html>
