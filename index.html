@@ -275,29 +275,6 @@ for (let i = 1; i <= 4; i++) {
   gruposDiv.innerHTML += generarGrupo(i);
 }
 function rellenarConsolacion() {
-  const csfInputs = [
-    document.getElementById("csf1_p1"),
-    document.getElementById("csf1_p2"),
-    document.getElementById("csf2_p1"),
-    document.getElementById("csf2_p2")
-  ];
-
-  // Recoge los terceros de cada grupo (C)
-  let terceros = [];
-  for (let g = 1; g <= 4; g++) {
-    const id = `G${g}-C`;
-    const nombre = document.getElementById(`master_${id}`)?.value;
-    if (nombre) terceros.push(nombre);
-  }
-
-  if (terceros.length === 4) {
-    csfInputs[0].value = terceros[0];
-    csfInputs[1].value = terceros[1];
-    csfInputs[2].value = terceros[2];
-    csfInputs[3].value = terceros[3];
-  }
-}
-function rellenarConsolacion() {
   const cons1_p1 = document.getElementById("cons1_p1");
   const cons1_p2 = document.getElementById("cons1_p2");
   const cons2_p1 = document.getElementById("cons2_p1");
