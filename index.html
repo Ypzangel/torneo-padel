@@ -44,21 +44,38 @@
   </div>
 
   <div class="fase">
-    <h2>Semifinales Cuadro de Consolación</h2>
-    <table>
-      <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-      <tr><td><input id="cons1_p1" readonly></td><td><input id="cons1_p2" readonly></td><td><input id="cons1_res" oninput="procesarFinal('cons1')"></td><td><input id="cons1_win" readonly></td></tr>
-      <tr><td><input id="cons2_p1" readonly></td><td><input id="cons2_p2" readonly></td><td><input id="cons2_res" oninput="procesarFinal('cons2')"></td><td><input id="cons2_win" readonly></td></tr>
-    </table>
-  </div>
+  <h2>Semifinales Cuadro de Consolación</h2>
+  <table>
+    <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
+    <tr>
+      <td><input id="cons1_p1" readonly></td>
+      <td><input id="cons1_p2" readonly></td>
+      <td><input id="cons1_res" oninput="calcularGanadorConsolacion()"></td>
+      <td><input id="cons1_win" readonly></td>
+    </tr>
+    <tr>
+      <td><input id="cons2_p1" readonly></td>
+      <td><input id="cons2_p2" readonly></td>
+      <td><input id="cons2_res" oninput="calcularGanadorConsolacion()"></td>
+      <td><input id="cons2_win" readonly></td>
+    </tr>
+  </table>
+</div>
+
 
   <div class="fase">
-    <h2>Final Consolación</h2>
-    <table>
-      <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-      <tr><td><input id="consfinal_p1" readonly></td><td><input id="consfinal_p2" readonly></td><td><input id="consfinal_res" oninput="procesarFinal('consfinal')"></td><td><input id="consfinal_win" readonly></td></tr>
-    </table>
-  </div>
+  <h2>Final Consolación</h2>
+  <table>
+    <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
+    <tr>
+      <td><input id="consfinal_p1" readonly></td>
+      <td><input id="consfinal_p2" readonly></td>
+      <td><input id="consfinal_res" oninput="calcularGanadorConsolacion()"></td>
+      <td><input id="consfinal_win" readonly></td>
+    </tr>
+  </table>
+</div>
+
 
   <div class="resumen">
     <h2>Tabla General de Juegos por Pareja</h2>
@@ -297,8 +314,8 @@ function rellenarConsolacion() {
 }
 
 function calcularGanadorConsolacion() {
-  const r1 = document.getElementById("res_csf1").value;
-  const r2 = document.getElementById("res_csf2").value;
+  const r1 = document.getElementById("cons1_res").value;
+  const r2 = document.getElementById("cons2_res").value;
   const [p1a, p1b] = [document.getElementById("cons1_p1").value, document.getElementById("cons1_p2").value];
   const [p2a, p2b] = [document.getElementById("cons2_p1").value, document.getElementById("cons2_p2").value];
 
@@ -306,15 +323,26 @@ function calcularGanadorConsolacion() {
   const [g3, g4] = r2.split("-").map(n => parseInt(n));
 
   if (!isNaN(g1) && !isNaN(g2)) {
-    document.getElementById("win_csf1").value = g1 > g2 ? p1a : p1b;
-    document.getElementById("cons_p1").value = g1 > g2 ? p1a : p1b;
+    document.getElementById("cons1_win").value = g1 > g2 ? p1a : p1b;
+    document.getElementById("consfinal_p1").value = g1 > g2 ? p1a : p1b;
   }
 
   if (!isNaN(g3) && !isNaN(g4)) {
-    document.getElementById("win_csf2").value = g3 > g4 ? p2a : p2b;
-    document.getElementById("cons_p2").value = g3 > g4 ? p2a : p2b;
+    document.getElementById("cons2_win").value = g3 > g4 ? p2a : p2b;
+    document.getElementById("consfinal_p2").value = g3 > g4 ? p2a : p2b;
+  }
+
+  // 👉 Lógica de la final de consolación
+  const r3 = document.getElementById("consfinal_res").value;
+  const [gf1, gf2] = r3.split("-").map(n => parseInt(n));
+  const [f1, f2] = [document.getElementById("consfinal_p1").value, document.getElementById("consfinal_p2").value];
+
+  if (!isNaN(gf1) && !isNaN(gf2)) {
+    document.getElementById("consfinal_win").value = gf1 > gf2 ? f1 : f2;
   }
 }
+
+
 
 window.addEventListener('load', rellenarConsolacion);
 
