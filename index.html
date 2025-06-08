@@ -299,8 +299,8 @@ function rellenarConsolacion() {
 function calcularGanadorConsolacion() {
   const r1 = document.getElementById("res_csf1").value;
   const r2 = document.getElementById("res_csf2").value;
-  const [p1a, p1b] = [document.getElementById("csf1_p1").value, document.getElementById("csf1_p2").value];
-  const [p2a, p2b] = [document.getElementById("csf2_p1").value, document.getElementById("csf2_p2").value];
+  const [p1a, p1b] = [document.getElementById("cons1_p1").value, document.getElementById("cons1_p2").value];
+  const [p2a, p2b] = [document.getElementById("cons2_p1").value, document.getElementById("cons2_p2").value];
 
   const [g1, g2] = r1.split("-").map(n => parseInt(n));
   const [g3, g4] = r2.split("-").map(n => parseInt(n));
@@ -315,6 +315,9 @@ function calcularGanadorConsolacion() {
     document.getElementById("cons_p2").value = g3 > g4 ? p2a : p2b;
   }
 }
+
+window.addEventListener('load', rellenarConsolacion);
+
 
 </script>
 </body>
