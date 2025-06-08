@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Torneo - El Rincón del Pádel</title>
+  <title>Torneo - El Rincón del Pádel | Nivel Hasta 2.75</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 20px; color: #333; }
     h1, h2 { color: #C8102E; }
@@ -17,7 +17,7 @@
   </style>
 </head>
 <body>
-  <h1>Torneo El Rincón del Pádel</h1>
+  <h1>Torneo El Rincón del Pádel | Nivel Hasta 2.75</h1>
   <p><strong>Formato:</strong> 4 grupos de 3 parejas | Fase de grupos + Semis + Final + Consolación</p>
 
   <div class="nombres-container" id="nombresContainer"></div>
@@ -47,18 +47,8 @@
   <h2>Semifinales Cuadro de Consolación</h2>
   <table>
     <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-    <tr>
-      <td><input id="cons1_p1" readonly></td>
-      <td><input id="cons1_p2" readonly></td>
-      <td><input id="cons1_res" oninput="calcularGanadorConsolacion()"></td>
-      <td><input id="cons1_win" readonly></td>
-    </tr>
-    <tr>
-      <td><input id="cons2_p1" readonly></td>
-      <td><input id="cons2_p2" readonly></td>
-      <td><input id="cons2_res" oninput="calcularGanadorConsolacion()"></td>
-      <td><input id="cons2_win" readonly></td>
-    </tr>
+    <tr><td><input id="cons1_p1"></td><td><input id="cons1_p2"></td><td><input id="cons1_res" oninput="calcularGanadorConsolacion()"></td><td><input id="cons1_win" readonly></td></tr>
+    <tr><td><input id="cons2_p1"></td><td><input id="cons2_p2"></td><td><input id="cons2_res" oninput="calcularGanadorConsolacion()"></td><td><input id="cons2_win" readonly></td></tr>
   </table>
 </div>
 
@@ -67,14 +57,10 @@
   <h2>Final Consolación</h2>
   <table>
     <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-    <tr>
-      <td><input id="consfinal_p1" readonly></td>
-      <td><input id="consfinal_p2" readonly></td>
-      <td><input id="consfinal_res" oninput="calcularGanadorConsolacion()"></td>
-      <td><input id="consfinal_win" readonly></td>
-    </tr>
+    <tr><td><input id="consfinal_p1"></td><td><input id="consfinal_p2"></td><td><input id="consfinal_res" oninput="procesarFinal('consfinal')"></td><td><input id="consfinal_win" readonly></td></tr>
   </table>
 </div>
+
 
 
   <div class="resumen">
