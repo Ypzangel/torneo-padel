@@ -205,7 +205,7 @@ function actualizarResumen() {
     });
   }
 }
-
+rellenarConsolacion();
 
 
 function actualizarSemifinales() {
@@ -274,6 +274,7 @@ const gruposDiv = document.getElementById('grupos');
 for (let i = 1; i <= 4; i++) {
   gruposDiv.innerHTML += generarGrupo(i);
 }
+rellenarConsolacion();
 function rellenarConsolacion() {
   const cons1_p1 = document.getElementById("cons1_p1");
   const cons1_p2 = document.getElementById("cons1_p2");
