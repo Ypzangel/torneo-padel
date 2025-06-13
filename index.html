@@ -183,10 +183,9 @@ function actualizarResumen() {
       };
     });
 
-    // Ordenamos las parejas del grupo
+    // Ordenar primero por juegos ganados, luego por diferencia
     parejas.sort((a, b) => {
       if (b.ganados !== a.ganados) return b.ganados - a.ganados;
-      if (a.perdidos !== b.perdidos) return a.perdidos - b.perdidos;
       return b.diferencia - a.diferencia;
     });
 
@@ -197,17 +196,18 @@ function actualizarResumen() {
     const grupoId = `G${g}`;
     tabla.innerHTML += `<tr><th colspan="4">Grupo ${g}</th></tr>`;
     tabla.innerHTML += `<tr><th>Pareja</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr>`;
-    
+
     grupos[grupoId].forEach((item, idx) => {
       let bgColor = '';
-      if (idx === 0) bgColor = ' style="background-color:#d4edda;"';      // verde claro
-      else if (idx === 1) bgColor = ' style="background-color:#fff3cd;"'; // amarillo claro
-      else bgColor = ' style="background-color:#f8d7da;"';                // rojo claro
+      if (idx === 0) bgColor = ' style="background-color:#d4edda;"';
+      else if (idx === 1) bgColor = ' style="background-color:#fff3cd;"';
+      else bgColor = ' style="background-color:#f8d7da;"';
 
       tabla.innerHTML += `<tr${bgColor}><td>${item.pareja}</td><td>${item.ganados}</td><td>${item.perdidos}</td><td>${item.diferencia}</td></tr>`;
     });
   }
 }
+
 rellenarConsolacion();
 
 
