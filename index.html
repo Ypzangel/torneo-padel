@@ -2,337 +2,207 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Torneo - El Rincón del Pádel | Nivel Hasta 2.75</title>
+  <title>Torneo Wilson | El Rincón del Pádel</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 20px; color: #333; }
-    h1, h2 { color: #C8102E; }
-    .grupo, .fase, .resumen { background: #fff; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 8px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background: #C8102E; color: #fff; }
-    input { width: 95%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; }
-    .stats { margin-top: 10px; font-size: 0.9em; background: #eef; padding: 8px; border-radius: 6px; }
-    .nombres-container { margin-bottom: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    header {
+      background-color: #1D9BF0;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background: #e6f2fb;
+      border-bottom: 2px solid #1D9BF0;
+    }
+    .tabs button {
+      background: none;
+      border: none;
+      padding: 1rem 2rem;
+      cursor: pointer;
+      font-weight: bold;
+      color: #1D9BF0;
+    }
+    .tabs button.active {
+      border-bottom: 4px solid #1D9BF0;
+      color: #0b4d91;
+    }
+    .content {
+      padding: 1rem 2rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #1D9BF0;
+      color: white;
+    }
   </style>
 </head>
 <body>
-  <h1>Torneo El Rincón del Pádel | Nivel Hasta 2.75</h1>
-  <p><strong>Formato:</strong> 4 grupos de 3 parejas | Fase de grupos + Semis + Final + Consolación</p>
 
-  <div class="nombres-container" id="nombresContainer"></div>
-  <div class="grupo">
-    <h2>Fase de Grupos</h2>
-    <div id="grupos"></div>
-  </div>
+<header>
+  <h1>Torneo Wilson | El Rincón del Pádel</h1>
+</header>
 
-  <div class="fase">
-    <h2>Semifinales</h2>
-    <table>
-      <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-      <tr><td><input id="semi1_p1" readonly></td><td><input id="semi1_p2" readonly></td><td><input id="semi1_res" oninput="procesarFinal('semi1')"></td><td><input id="semi1_win" readonly></td></tr>
-      <tr><td><input id="semi2_p1" readonly></td><td><input id="semi2_p2" readonly></td><td><input id="semi2_res" oninput="procesarFinal('semi2')"></td><td><input id="semi2_win" readonly></td></tr>
-    </table>
-  </div>
-
-  <div class="fase">
-    <h2>Final</h2>
-    <table>
-      <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-      <tr><td><input id="final_p1" readonly></td><td><input id="final_p2" readonly></td><td><input id="final_res" oninput="procesarFinal('final')"></td><td><input id="final_win" readonly></td></tr>
-    </table>
-  </div>
-
-  <div class="fase">
-  <h2>Semifinales Cuadro de Consolación</h2>
-  <table>
-    <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-    <tr><td><input id="cons1_p1"></td><td><input id="cons1_p2"></td><td><input id="cons1_res" oninput="calcularGanadorConsolacion()"></td><td><input id="cons1_win" readonly></td></tr>
-    <tr><td><input id="cons2_p1"></td><td><input id="cons2_p2"></td><td><input id="cons2_res" oninput="calcularGanadorConsolacion()"></td><td><input id="cons2_win" readonly></td></tr>
-  </table>
+<div class="tabs">
+  <button class="tab-button active" data-group="A">Grupo A</button>
+  <button class="tab-button" data-group="B">Grupo B</button>
+  <button class="tab-button" data-group="C">Grupo C</button>
+  <button class="tab-button" data-group="D">Grupo D</button>
+  <button class="tab-button" data-group="Eliminatorias">Eliminatorias</button>
 </div>
 
-
-  <div class="fase">
-  <h2>Final Consolación</h2>
-  <table>
-    <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-    <tr><td><input id="consfinal_p1"></td><td><input id="consfinal_p2"></td><td><input id="consfinal_res" oninput="procesarFinal('consfinal')"></td><td><input id="consfinal_win" readonly></td></tr>
-  </table>
+<div class="content">
+  <div id="grupo-content"></div>
 </div>
 
+<script>
+  const url = "https://script.google.com/macros/s/AKfycbzNEYcqcsp3ymPf_KZmPhYwrHCQ5X4JBgqWhjcm2APysWTqCEnfAuk-3yRCpKMABn2Q/exec";
+  const grupoContent = document.getElementById("grupo-content");
+  const tabs = document.querySelectorAll(".tab-button");
+  let datosGlobal = {};
 
-
-  <div class="resumen">
-    <h2>Tabla General de Juegos por Pareja</h2>
-    <table id="tablaResumen">
-      <tr><th>Pareja</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr>
-    </table>
-  </div>
-
-  <script>
-// Variables globales
-const nombresJugadores = {};
-const resumenStats = {};
-const ganadoresGrupo = {};
-const segundosGrupo = {};
-
-function syncNombre(idBase, inputId) {
-  const input = document.getElementById(inputId);
-  input.addEventListener('input', () => {
-    nombresJugadores[idBase] = input.value;
-    const campos = document.querySelectorAll(`[data-sync="${idBase}"]`);
-    campos.forEach(campo => campo.value = input.value);
-    actualizarResumen();
-    rellenarConsolacion(); // ✅ ACTUALIZA LAS SEMIS DE CONSOLACIÓN AL CAMBIAR NOMBRES
+  // Activar pestañas
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      mostrarGrupo(tab.dataset.group);
+    });
   });
-}
 
+  // Cargar datos
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      datosGlobal = data;
+      mostrarGrupo("A");
+    });
 
-function generarGrupo(id) {
-  let html = `<h3>Grupo ${id}</h3><table><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>`;
-  const partidos = [["A", "B"], ["B", "C"], ["A", "C"]];
-  partidos.forEach((match, index) => {
-    const p1id = `g${id}_${index}_p1`;
-    const p2id = `g${id}_${index}_p2`;
-    const resId = `g${id}_${index}_res`;
-    const winId = `g${id}_${index}_win`;
-    const statsId = `g${id}_${index}_stats`;
-    const sync1 = `G${id}-${match[0]}`;
-    const sync2 = `G${id}-${match[1]}`;
-    html += `<tr>
-      <td><input id='${p1id}' data-sync='${sync1}' placeholder='${id}-${match[0]}'></td>
-      <td><input id='${p2id}' data-sync='${sync2}' placeholder='${id}-${match[1]}'></td>
-      <td><input id='${resId}' oninput="calcularGanador('${p1id}', '${p2id}', '${resId}', '${winId}', '${statsId}', ${id})"></td>
-      <td><input id='${winId}' readonly></td>
-    </tr>
-    <tr><td colspan="4"><div class='stats' id='${statsId}'></div></td></tr>`;
-  });
-  html += `</table>`;
-  return html;
-}
+  // Mostrar datos por grupo o eliminatorias
+  function mostrarGrupo(grupo) {
+    if (grupo === "Eliminatorias") {
+  const eliminatorias = datosGlobal["eliminatorias"] || [];
 
-function calcularGanador(id1, id2, idRes, idWin, idStats, grupoId) {
-  const p1 = document.getElementById(id1).value.trim();
-  const p2 = document.getElementById(id2).value.trim();
-  const res = document.getElementById(idRes).value.trim();
-  const win = document.getElementById(idWin);
-  const stats = document.getElementById(idStats);
-  const set = res.split(/[-/ ]+/).map(n => parseInt(n));
+  const secciones = {
+    "Semifinales": ["Semifinal 1", "Semifinal 2"],
+    "Finales": ["Final", "Tercer Puesto"],
+    "Consolación": [
+      "Semifinal Consolación 1",
+      "Semifinal Consolación 2",
+      "Final Consolación"
+    ]
+  };
 
-  if (set.length >= 2 && !set.includes(NaN)) {
-    let p1wins = 0, p2wins = 0, p1games = 0, p2games = 0;
-    for (let i = 0; i < set.length; i += 2) {
-      const s1 = set[i], s2 = set[i + 1];
-      p1games += s1;
-      p2games += s2;
-      if (s1 > s2) p1wins++;
-      else if (s1 < s2) p2wins++;
+  function formatearFecha(fecha) {
+    try {
+      const d = new Date(fecha);
+      if (isNaN(d)) return fecha;
+      return d.toLocaleDateString("es-ES");
+    } catch {
+      return fecha;
     }
-
-    win.value = p1wins > p2wins ? p1 : p2;
-
-    // Inicializar si no existe
-    if (!resumenStats[p1]) resumenStats[p1] = { ganados: 0, perdidos: 0 };
-    if (!resumenStats[p2]) resumenStats[p2] = { ganados: 0, perdidos: 0 };
-
-    // Restar juegos anteriores si los había
-    const key = `${idRes}_prev`;
-    if (document.getElementById(idRes)[key]) {
-      const [oldG1, oldG2] = document.getElementById(idRes)[key];
-      resumenStats[p1].ganados -= oldG1;
-      resumenStats[p1].perdidos -= oldG2;
-      resumenStats[p2].ganados -= oldG2;
-      resumenStats[p2].perdidos -= oldG1;
-    }
-
-    // Guardar nuevos valores
-    resumenStats[p1].ganados += p1games;
-    resumenStats[p1].perdidos += p2games;
-    resumenStats[p2].ganados += p2games;
-    resumenStats[p2].perdidos += p1games;
-    document.getElementById(idRes)[key] = [p1games, p2games];
-
-    stats.innerText = `${p1}: ${p1games} ganados / ${p2games} perdidos | ${p2}: ${p2games} ganados / ${p1games} perdidos | Diferencia: ${p1games - p2games}`;
-    actualizarResumen();
-
-    if (!ganadoresGrupo[`G${grupoId}`]) ganadoresGrupo[`G${grupoId}`] = {};
-    ganadoresGrupo[`G${grupoId}`][p1] = resumenStats[p1];
-    ganadoresGrupo[`G${grupoId}`][p2] = resumenStats[p2];
-    actualizarSemifinales();
-  } else {
-    win.value = '';
-    stats.innerText = '';
   }
+
+  let html = `<h2>Cuadro Eliminatorias</h2>`;
+
+  for (const [titulo, rondas] of Object.entries(secciones)) {
+    html += `<h3 style="margin-top:30px; color:#1D9BF0;">${titulo}</h3>`;
+    html += `
+      <table>
+        <thead>
+          <tr><th>Ronda</th><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
+        </thead>
+        <tbody>
+          ${eliminatorias
+            .filter(p => rondas.includes(p["Ronda"]))
+            .map(p => `
+            <tr>
+              <td>${p["Ronda"]}</td>
+              <td>${p["Pareja 1"]}</td>
+              <td>${p["Pareja 2"]}</td>
+              <td>${formatearFecha(p["Resultado"])}</td>
+              <td><strong>${p["Ganador"] || ""}</strong></td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    `;
+  }
+
+  grupoContent.innerHTML = html;
+  return;
 }
 
 
-function actualizarResumen() {
-  const tabla = document.getElementById("tablaResumen");
-  tabla.innerHTML = "";
+    const resultados = datosGlobal["resultados" + grupo] || [];
+    const clasificacion = datosGlobal["clasificacion" + grupo] || [];
 
-  const grupos = { G1: [], G2: [], G3: [], G4: [] };
+    grupoContent.innerHTML = `
+      <h2>Resultados - Grupo ${grupo}</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${resultados.map(p => `
+            <tr>
+              <td>${p['Pareja 1'] || ''}</td>
+              <td>${p['Pareja 2'] || ''}</td>
+              <td>${p['Resultado'] || ''}</td>
+              <td>${p['Ganador'] || ''}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
 
-  for (const grupo in ganadoresGrupo) {
-    const parejas = Object.entries(ganadoresGrupo[grupo]).map(([pareja, datos]) => {
-      return {
-        pareja,
-        ganados: datos.ganados,
-        perdidos: datos.perdidos,
-        diferencia: datos.ganados - datos.perdidos
-      };
-    });
-
-    // Ordenar primero por juegos ganados, luego por diferencia
-    parejas.sort((a, b) => {
-      if (b.ganados !== a.ganados) return b.ganados - a.ganados;
-      return b.diferencia - a.diferencia;
-    });
-
-    grupos[grupo] = parejas;
+      <h2>Clasificación - Grupo ${grupo}</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Pareja</th><th>PJ</th><th>PG</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${clasificacion.sort((a, b) =>
+            b["PG"] - a["PG"] ||
+            b["Juegos Ganados"] - a["Juegos Ganados"] ||
+            b["Diferencia"] - a["Diferencia"]
+          ).map(p => `
+            <tr>
+              <td>${p['Pareja'] || ''}</td>
+              <td>${p['PJ'] || 0}</td>
+              <td>${p['PG'] || 0}</td>
+              <td>${p['Juegos Ganados'] || 0}</td>
+              <td>${p['Juegos Perdidos'] || 0}</td>
+              <td>${p['Diferencia'] || 0}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    `;
   }
-
-  for (let g = 1; g <= 4; g++) {
-    const grupoId = `G${g}`;
-    tabla.innerHTML += `<tr><th colspan="4">Grupo ${g}</th></tr>`;
-    tabla.innerHTML += `<tr><th>Pareja</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr>`;
-
-    grupos[grupoId].forEach((item, idx) => {
-      let bgColor = '';
-      if (idx === 0) bgColor = ' style="background-color:#d4edda;"';
-      else if (idx === 1) bgColor = ' style="background-color:#fff3cd;"';
-      else bgColor = ' style="background-color:#f8d7da;"';
-
-      tabla.innerHTML += `<tr${bgColor}><td>${item.pareja}</td><td>${item.ganados}</td><td>${item.perdidos}</td><td>${item.diferencia}</td></tr>`;
-    });
-  }
-}
-
-rellenarConsolacion();
-
-
-function actualizarSemifinales() {
-  function mejorPareja(grupo) {
-    const stats = ganadoresGrupo[`G${grupo}`];
-    if (!stats) return '';
-    return Object.keys(stats).sort((a, b) => {
-      const da = stats[a].ganados - stats[a].perdidos;
-      const db = stats[b].ganados - stats[b].perdidos;
-      return db - da;
-    })[0] || '';
-  }
-  document.getElementById("semi1_p1").value = mejorPareja(1);
-  document.getElementById("semi1_p2").value = mejorPareja(3);
-  document.getElementById("semi2_p1").value = mejorPareja(2);
-  document.getElementById("semi2_p2").value = mejorPareja(4);
-  document.getElementById("cons1_p1").value = Object.keys(ganadoresGrupo[1] || {}).sort()[1] || '';
-  document.getElementById("cons1_p2").value = Object.keys(ganadoresGrupo[3] || {}).sort()[1] || '';
-  document.getElementById("cons2_p1").value = Object.keys(ganadoresGrupo[2] || {}).sort()[1] || '';
-  document.getElementById("cons2_p2").value = Object.keys(ganadoresGrupo[4] || {}).sort()[1] || '';
-}
-
-function procesarFinal(id) {
-  const p1 = document.getElementById(`${id}_p1`).value.trim();
-  const p2 = document.getElementById(`${id}_p2`).value.trim();
-  const res = document.getElementById(`${id}_res`).value.trim();
-  const win = document.getElementById(`${id}_win`);
-  const set = res.split(/[-/ ]+/).map(n => parseInt(n));
-  if (set.length >= 2 && !set.includes(NaN)) {
-    let p1wins = 0, p2wins = 0;
-    for (let i = 0; i < set.length; i += 2) {
-      const s1 = set[i], s2 = set[i + 1];
-      if (s1 > s2) p1wins++;
-      else if (s1 < s2) p2wins++;
-    }
-    win.value = p1wins > p2wins ? p1 : p2;
-    if (id === 'semi1') document.getElementById('final_p1').value = win.value;
-    if (id === 'semi2') document.getElementById('final_p2').value = win.value;
-    if (id === 'cons1') document.getElementById('consfinal_p1').value = win.value;
-    if (id === 'cons2') document.getElementById('consfinal_p2').value = win.value;
-  } else {
-    win.value = '';
-  }
-}
-
-function generarInputsNombres() {
-  const cont = document.getElementById("nombresContainer");
-  for (let g = 1; g <= 4; g++) {
-    ['A', 'B', 'C'].forEach(letra => {
-      const id = `G${g}-${letra}`;
-      const input = document.createElement('input');
-      input.id = `master_${id}`;
-      input.placeholder = `Nombre pareja ${id}`;
-      input.style = 'margin: 2px 10px 10px 0; width: 220px;';
-      cont.appendChild(input);
-      syncNombre(id, input.id);
-    });
-  }
-
-  rellenarConsolacion(); // ✅ Llamada para completar automáticamente el cuadro de consolación
-}
-
-
-generarInputsNombres();
-const gruposDiv = document.getElementById('grupos');
-for (let i = 1; i <= 4; i++) {
-  gruposDiv.innerHTML += generarGrupo(i);
-}
-rellenarConsolacion();
-function rellenarConsolacion() {
-  const cons1_p1 = document.getElementById("cons1_p1");
-  const cons1_p2 = document.getElementById("cons1_p2");
-  const cons2_p1 = document.getElementById("cons2_p1");
-  const cons2_p2 = document.getElementById("cons2_p2");
-
-  const terceros = [];
-  for (let g = 1; g <= 4; g++) {
-    const id = `G${g}-C`;
-    const nombre = document.getElementById(`master_${id}`)?.value;
-    if (nombre) terceros.push(nombre);
-  }
-
-  if (terceros.length === 4) {
-    cons1_p1.value = terceros[0];
-    cons1_p2.value = terceros[1];
-    cons2_p1.value = terceros[2];
-    cons2_p2.value = terceros[3];
-  }
-}
-
-function calcularGanadorConsolacion() {
-  const r1 = document.getElementById("cons1_res").value;
-  const r2 = document.getElementById("cons2_res").value;
-  const [p1a, p1b] = [document.getElementById("cons1_p1").value, document.getElementById("cons1_p2").value];
-  const [p2a, p2b] = [document.getElementById("cons2_p1").value, document.getElementById("cons2_p2").value];
-
-  const [g1, g2] = r1.split("-").map(n => parseInt(n));
-  const [g3, g4] = r2.split("-").map(n => parseInt(n));
-
-  if (!isNaN(g1) && !isNaN(g2)) {
-    document.getElementById("cons1_win").value = g1 > g2 ? p1a : p1b;
-    document.getElementById("consfinal_p1").value = g1 > g2 ? p1a : p1b;
-  }
-
-  if (!isNaN(g3) && !isNaN(g4)) {
-    document.getElementById("cons2_win").value = g3 > g4 ? p2a : p2b;
-    document.getElementById("consfinal_p2").value = g3 > g4 ? p2a : p2b;
-  }
-
-  // 👉 Lógica de la final de consolación
-  const r3 = document.getElementById("consfinal_res").value;
-  const [gf1, gf2] = r3.split("-").map(n => parseInt(n));
-  const [f1, f2] = [document.getElementById("consfinal_p1").value, document.getElementById("consfinal_p2").value];
-
-  if (!isNaN(gf1) && !isNaN(gf2)) {
-    document.getElementById("consfinal_win").value = gf1 > gf2 ? f1 : f2;
-  }
-}
-
-
-
-window.addEventListener('load', rellenarConsolacion);
-
-
 </script>
+
 </body>
 </html>
