@@ -220,22 +220,29 @@
     `;
   }
 
-  function generarEliminatoriasDesdeHTML() {
-    fetch(url, {
-      method: "POST",
-      body: new URLSearchParams({ action: "generarEliminatorias" }),
-      headers: { "Content-Type": "application/x-www-form-urlencoded" }
-    })
-    .then(res => res.text())
-    .then(resp => {
-      alert("✅ Cuadro generado correctamente.");
-      location.reload();
-    })
-    .catch(err => {
-      alert("❌ Error al generar el cuadro.");
-      console.error(err);
-    });
+function generarEliminatoriasDesdeHTML() {
+  const clave = prompt("Introduce el código para generar el cuadro:");
+
+  if (clave !== "admin2024") {
+    alert("❌ Código incorrecto. No se ha generado el cuadro.");
+    return;
   }
+
+  fetch("https://script.google.com/macros/s/AKfycbzNEYcqcsp3ymPf_KZmPhYwrHCQ5X4JBgqWhjcm2APysWTqCEnfAuk-3yRCpKMABn2Q/exec", {
+    method: "POST",
+    body: new URLSearchParams({ action: "generarEliminatorias" }),
+    headers: { "Content-Type": "application/x-www-form-urlencoded" }
+  })
+  .then(res => res.text())
+  .then(resp => {
+    alert("✅ Cuadro generado correctamente.");
+    location.reload();
+  })
+  .catch(err => {
+    alert("❌ Error al generar el cuadro.");
+    console.error(err);
+  });
+}
 </script>
 
 </body>
