@@ -10,7 +10,6 @@
       background-color: #f9f9f9;
       color: #333;
     }
-
     header {
       background-color: #1D9BF0;
       color: white;
@@ -19,23 +18,13 @@
       align-items: center;
       gap: 1rem;
     }
-
-    header img {
-      height: 50px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 1.5rem;
-    }
-
+    h1 { margin: 0; font-size: 1.5rem; }
     .tabs {
       display: flex;
       justify-content: center;
       background: #e6f2fb;
       border-bottom: 2px solid #1D9BF0;
     }
-
     .tabs button {
       background: none;
       border: none;
@@ -44,35 +33,32 @@
       font-weight: bold;
       color: #1D9BF0;
     }
-
     .tabs button.active {
       border-bottom: 4px solid #1D9BF0;
       color: #0b4d91;
     }
-
-    .content {
-      padding: 1rem 2rem;
-    }
-
+    .content { padding: 1rem 2rem; }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
     }
-
     th, td {
       border: 1px solid #ccc;
       padding: 8px;
       text-align: center;
     }
-
-    th {
+    th { background-color: #1D9BF0; color: white; }
+    .hidden { display: none; }
+    .btn-generar {
+      padding: 1rem 2rem;
+      font-size: 1rem;
       background-color: #1D9BF0;
       color: white;
-    }
-
-    .hidden {
-      display: none;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 2rem;
     }
   </style>
 </head>
@@ -144,7 +130,7 @@
           </tbody>
         </table>
 
-        <h3>Finales</h3>
+        <h3>Final</h3>
         <table>
           <thead>
             <tr><th>Ronda</th><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
@@ -164,11 +150,11 @@
           </tbody>
         </table>
 
-        <div style="text-align:center; margin-top: 2rem;">
-          <button onclick="generarEliminatoriasDesdeHTML()" style="padding: 1rem 2rem; font-size: 1rem; background-color: #1D9BF0; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        <div style="text-align:center;">
+          <button class="btn-generar" onclick="generarEliminatoriasDesdeHTML()">
             🔁 Generar Cuadro de Eliminatorias
           </button>
-          <p style="margin-top: 0.5rem; color: #777;">Pulsa solo cuando hayan finalizado todos los partidos de grupo.</p>
+          <p style="margin-top: 0.5rem; color: #777;">Pulsa solo si ya han finalizado todos los partidos de grupo.</p>
         </div>
       `;
       return;
@@ -220,30 +206,30 @@
     `;
   }
 
-function generarEliminatoriasDesdeHTML() {
-  const clave = prompt("Introduce el código para generar el cuadro:");
+  function generarEliminatoriasDesdeHTML() {
+    const clave = prompt("Introduce el código para generar el cuadro:");
+    if (clave !== "admin2024") {
+      alert("❌ Código incorrecto. No se ha generado el cuadro.");
+      return;
+    }
 
-  if (clave !== "admin2024") {
-    alert("❌ Código incorrecto. No se ha generado el cuadro.");
-    return;
+    fetch(url, {
+      method: "POST",
+      body: new URLSearchParams({ action: "generarEliminatorias" }),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    })
+    .then(res => res.text())
+    .then(resp => {
+      alert("✅ Cuadro generado correctamente.");
+      location.reload();
+    })
+    .catch(err => {
+      alert("❌ Error al generar el cuadro.");
+      console.error(err);
+    });
   }
-
-  fetch("https://script.google.com/macros/s/AKfycbzNEYcqcsp3ymPf_KZmPhYwrHCQ5X4JBgqWhjcm2APysWTqCEnfAuk-3yRCpKMABn2Q/exec", {
-    method: "POST",
-    body: new URLSearchParams({ action: "generarEliminatorias" }),
-    headers: { "Content-Type": "application/x-www-form-urlencoded" }
-  })
-  .then(res => res.text())
-  .then(resp => {
-    alert("✅ Cuadro generado correctamente.");
-    location.reload();
-  })
-  .catch(err => {
-    alert("❌ Error al generar el cuadro.");
-    console.error(err);
-  });
-}
 </script>
 
 </body>
 </html>
+
