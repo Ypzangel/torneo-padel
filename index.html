@@ -24,6 +24,7 @@
       justify-content: center;
       background: #e6f2fb;
       border-bottom: 2px solid #1D9BF0;
+      flex-wrap: wrap;
     }
     .tabs button {
       background: none;
@@ -49,7 +50,6 @@
       text-align: center;
     }
     th { background-color: #1D9BF0; color: white; }
-    .hidden { display: none; }
     .btn-generar {
       padding: 1rem 2rem;
       font-size: 1rem;
@@ -59,6 +59,26 @@
       border-radius: 8px;
       cursor: pointer;
       margin-top: 2rem;
+    }
+    .bracket {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .round {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      min-width: 200px;
+    }
+    .match {
+      border: 2px solid #1D9BF0;
+      border-radius: 8px;
+      padding: 0.5rem;
+      background-color: #fff;
+      box-shadow: 2px 2px 4px #ccc;
     }
   </style>
 </head>
@@ -74,6 +94,7 @@
   <button class="tab-button" data-group="C">Grupo C</button>
   <button class="tab-button" data-group="D">Grupo D</button>
   <button class="tab-button" data-group="Eliminatorias">Eliminatorias</button>
+  <button class="tab-button" data-group="Visual">Visual Bracket</button>
 </div>
 
 <div class="content">
@@ -90,8 +111,7 @@
     tab.addEventListener("click", () => {
       tabs.forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
-      const grupo = tab.dataset.group;
-      mostrarGrupo(grupo);
+      mostrarGrupo(tab.dataset.group);
     });
   });
 
@@ -103,104 +123,84 @@
     });
 
   function mostrarGrupo(grupo) {
-    if (grupo === "Eliminatorias") {
-      const eliminatorias = datosGlobal["eliminatorias"] || [];
+    if (grupo === "Eliminatorias") mostrarEliminatorias();
+    else if (grupo === "Visual") mostrarVisualBracket();
+    else mostrarTablaGrupo(grupo);
+  }
 
-      const tablaFiltrada = (rondas) => eliminatorias
-        .filter(p => rondas.includes(p["Ronda"]))
-        .map(p => `
-          <tr>
-            <td>${p["Ronda"] || ''}</td>
-            <td>${p["Pareja 1"] || ''}</td>
-            <td>${p["Pareja 2"] || ''}</td>
-            <td>${p["Resultado"] || ''}</td>
-            <td>${p["Ganador"] || ''}</td>
-          </tr>`).join('');
+  function mostrarEliminatorias() {
+    const eliminatorias = datosGlobal["eliminatorias"] || [];
+    const rondas = ["Semifinal 1", "Semifinal 2", "Final", "Semifinal Consolación 1", "Semifinal Consolación 2", "Final Consolación"];
 
-      grupoContent.innerHTML = `
-        <h2>Cuadro Eliminatorias</h2>
+    const tabla = (titulo, claves) => `
+      <h3>${titulo}</h3>
+      <table><thead><tr><th>Ronda</th><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr></thead><tbody>
+      ${eliminatorias.filter(p => claves.includes(p["Ronda"]))
+        .map(p => `<tr><td>${p["Ronda"]}</td><td>${p["Pareja 1"]}</td><td>${p["Pareja 2"]}</td><td>${p["Resultado"]}</td><td>${p["Ganador"]}</td></tr>`).join('')}
+      </tbody></table>`;
 
-        <h3>Semifinales</h3>
-        <table>
-          <thead>
-            <tr><th>Ronda</th><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-          </thead>
-          <tbody>
-            ${tablaFiltrada(["Semifinal 1", "Semifinal 2"])}
-          </tbody>
-        </table>
+    grupoContent.innerHTML = `
+      <h2>Cuadro Eliminatorias</h2>
+      ${tabla("Semifinales", ["Semifinal 1", "Semifinal 2"])}
+      ${tabla("Final", ["Final"])}
+      ${tabla("Consolación", ["Semifinal Consolación 1", "Semifinal Consolación 2", "Final Consolación"])}
+      <div style="text-align:center;">
+        <button class="btn-generar" onclick="generarEliminatoriasDesdeHTML()">🔁 Generar Cuadro de Eliminatorias</button>
+        <p style="color:#777;">Pulsa solo si ya han finalizado todos los partidos de grupo.</p>
+      </div>
+    `;
+  }
 
-        <h3>Final</h3>
-        <table>
-          <thead>
-            <tr><th>Ronda</th><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-          </thead>
-          <tbody>
-            ${tablaFiltrada(["Final"])}
-          </tbody>
-        </table>
+  function mostrarVisualBracket() {
+    const eliminatorias = datosGlobal["eliminatorias"] || [];
+    const matchHTML = (ronda) => {
+      const m = eliminatorias.find(p => p["Ronda"] === ronda);
+      return m ? `<div class="match"><strong>${m["Pareja 1"] || ""}</strong><br>vs<br><strong>${m["Pareja 2"] || ""}</strong><br><small>${m["Resultado"] || ""}</small></div>` : `<div class="match">---</div>`;
+    };
 
-        <h3>Consolación</h3>
-        <table>
-          <thead>
-            <tr><th>Ronda</th><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-          </thead>
-          <tbody>
-            ${tablaFiltrada(["Semifinal Consolación 1", "Semifinal Consolación 2", "Final Consolación"])}
-          </tbody>
-        </table>
-
-        <div style="text-align:center;">
-          <button class="btn-generar" onclick="generarEliminatoriasDesdeHTML()">
-            🔁 Generar Cuadro de Eliminatorias
-          </button>
-          <p style="margin-top: 0.5rem; color: #777;">Pulsa solo si ya han finalizado todos los partidos de grupo.</p>
+    grupoContent.innerHTML = `
+      <h2 style="text-align:center">Visual Bracket</h2>
+      <div class="bracket">
+        <div class="round">
+          <h3>Semifinales</h3>
+          ${matchHTML("Semifinal 1")}
+          ${matchHTML("Semifinal 2")}
         </div>
-      `;
-      return;
-    }
+        <div class="round">
+          <h3>Final</h3>
+          ${matchHTML("Final")}
+        </div>
+        <div class="round">
+          <h3>Semis Consolación</h3>
+          ${matchHTML("Semifinal Consolación 1")}
+          ${matchHTML("Semifinal Consolación 2")}
+        </div>
+        <div class="round">
+          <h3>Final Consolación</h3>
+          ${matchHTML("Final Consolación")}
+        </div>
+      </div>
+    `;
+  }
 
+  function mostrarTablaGrupo(grupo) {
     const resultados = datosGlobal["resultados" + grupo] || [];
     const clasificacion = datosGlobal["clasificacion" + grupo] || [];
 
     grupoContent.innerHTML = `
       <h2>Resultados - Grupo ${grupo}</h2>
       <table>
-        <thead>
-          <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-        </thead>
+        <thead><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr></thead>
         <tbody>
-          ${resultados.map(p => `
-            <tr>
-              <td>${p['Pareja 1'] || ''}</td>
-              <td>${p['Pareja 2'] || ''}</td>
-              <td>${p['Resultado'] || ''}</td>
-              <td>${p['Ganador'] || ''}</td>
-            </tr>`).join('')}
+          ${resultados.map(p => `<tr><td>${p['Pareja 1']}</td><td>${p['Pareja 2']}</td><td>${p['Resultado']}</td><td>${p['Ganador']}</td></tr>`).join('')}
         </tbody>
       </table>
-
       <h2>Clasificación - Grupo ${grupo}</h2>
       <table>
-        <thead>
-          <tr>
-            <th>Pareja</th><th>PJ</th><th>PG</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Pareja</th><th>PJ</th><th>PG</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr></thead>
         <tbody>
-          ${clasificacion.sort((a, b) =>
-            b["PG"] - a["PG"] ||
-            b["Juegos Ganados"] - a["Juegos Ganados"] ||
-            b["Diferencia"] - a["Diferencia"]
-          ).map(p => `
-            <tr>
-              <td>${p['Pareja'] || ''}</td>
-              <td>${p['PJ'] || 0}</td>
-              <td>${p['PG'] || 0}</td>
-              <td>${p['Juegos Ganados'] || 0}</td>
-              <td>${p['Juegos Perdidos'] || 0}</td>
-              <td>${p['Diferencia'] || 0}</td>
-            </tr>`).join('')}
+          ${clasificacion.sort((a,b) => b["PG"] - a["PG"] || b["Juegos Ganados"] - a["Juegos Ganados"] || b["Diferencia"] - a["Diferencia"])
+            .map(p => `<tr><td>${p['Pareja']}</td><td>${p['PJ']}</td><td>${p['PG']}</td><td>${p['Juegos Ganados']}</td><td>${p['Juegos Perdidos']}</td><td>${p['Diferencia']}</td></tr>`).join('')}
         </tbody>
       </table>
     `;
@@ -208,25 +208,12 @@
 
   function generarEliminatoriasDesdeHTML() {
     const clave = prompt("Introduce el código para generar el cuadro:");
-    if (clave !== "admin2024") {
-      alert("❌ Código incorrecto. No se ha generado el cuadro.");
-      return;
-    }
-
+    if (clave !== "admin2024") return alert("Código incorrecto");
     fetch(url, {
       method: "POST",
       body: new URLSearchParams({ action: "generarEliminatorias" }),
       headers: { "Content-Type": "application/x-www-form-urlencoded" }
-    })
-    .then(res => res.text())
-    .then(resp => {
-      alert("✅ Cuadro generado correctamente.");
-      location.reload();
-    })
-    .catch(err => {
-      alert("❌ Error al generar el cuadro.");
-      console.error(err);
-    });
+    }).then(() => location.reload()).catch(err => console.error(err));
   }
 </script>
 
