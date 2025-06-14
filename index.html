@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Torneo Wilson | El Rincón del Pádel</title>
   <style>
     body {
@@ -10,6 +10,7 @@
       background-color: #f9f9f9;
       color: #333;
     }
+
     header {
       background-color: #1D9BF0;
       color: white;
@@ -18,16 +19,23 @@
       align-items: center;
       gap: 1rem;
     }
+
+    header img {
+      height: 50px;
+    }
+
     h1 {
       margin: 0;
       font-size: 1.5rem;
     }
+
     .tabs {
       display: flex;
       justify-content: center;
       background: #e6f2fb;
       border-bottom: 2px solid #1D9BF0;
     }
+
     .tabs button {
       background: none;
       border: none;
@@ -36,26 +44,35 @@
       font-weight: bold;
       color: #1D9BF0;
     }
+
     .tabs button.active {
       border-bottom: 4px solid #1D9BF0;
       color: #0b4d91;
     }
+
     .content {
       padding: 1rem 2rem;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
     }
+
     th, td {
       border: 1px solid #ccc;
       padding: 8px;
       text-align: center;
     }
+
     th {
       background-color: #1D9BF0;
       color: white;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
 </head>
@@ -83,16 +100,15 @@
   const tabs = document.querySelectorAll(".tab-button");
   let datosGlobal = {};
 
-  // Activar pestañas
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
       tabs.forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
-      mostrarGrupo(tab.dataset.group);
+      const grupo = tab.dataset.group;
+      mostrarGrupo(grupo);
     });
   });
 
-  // Cargar datos
   fetch(url)
     .then(res => res.json())
     .then(data => {
@@ -100,60 +116,63 @@
       mostrarGrupo("A");
     });
 
-  // Mostrar datos por grupo o eliminatorias
   function mostrarGrupo(grupo) {
     if (grupo === "Eliminatorias") {
-  const eliminatorias = datosGlobal["eliminatorias"] || [];
+      const eliminatorias = datosGlobal["eliminatorias"] || [];
 
-  const secciones = {
-    "Semifinales": ["Semifinal 1", "Semifinal 2"],
-    "Finales": ["Final", "Tercer Puesto"],
-    "Consolación": [
-      "Semifinal Consolación 1",
-      "Semifinal Consolación 2",
-      "Final Consolación"
-    ]
-  };
+      const tablaFiltrada = (rondas) => eliminatorias
+        .filter(p => rondas.includes(p["Ronda"]))
+        .map(p => `
+          <tr>
+            <td>${p["Ronda"] || ''}</td>
+            <td>${p["Pareja 1"] || ''}</td>
+            <td>${p["Pareja 2"] || ''}</td>
+            <td>${p["Resultado"] || ''}</td>
+            <td>${p["Ganador"] || ''}</td>
+          </tr>`).join('');
 
-  function formatearFecha(fecha) {
-    try {
-      const d = new Date(fecha);
-      if (isNaN(d)) return fecha;
-      return d.toLocaleDateString("es-ES");
-    } catch {
-      return fecha;
+      grupoContent.innerHTML = `
+        <h2>Cuadro Eliminatorias</h2>
+
+        <h3>Semifinales</h3>
+        <table>
+          <thead>
+            <tr><th>Ronda</th><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
+          </thead>
+          <tbody>
+            ${tablaFiltrada(["Semifinal 1", "Semifinal 2"])}
+          </tbody>
+        </table>
+
+        <h3>Finales</h3>
+        <table>
+          <thead>
+            <tr><th>Ronda</th><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
+          </thead>
+          <tbody>
+            ${tablaFiltrada(["Final"])}
+          </tbody>
+        </table>
+
+        <h3>Consolación</h3>
+        <table>
+          <thead>
+            <tr><th>Ronda</th><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
+          </thead>
+          <tbody>
+            ${tablaFiltrada(["Semifinal Consolación 1", "Semifinal Consolación 2", "Final Consolación"])}
+          </tbody>
+        </table>
+
+        <div style="text-align:center; margin-top: 2rem;">
+          <button onclick="generarEliminatoriasDesdeHTML()" style="padding: 1rem 2rem; font-size: 1rem; background-color: #1D9BF0; color: white; border: none; border-radius: 8px; cursor: pointer;">
+            🔁 Generar Cuadro de Eliminatorias
+          </button>
+          <p style="margin-top: 0.5rem; color: #777;">Pulsa solo cuando hayan finalizado todos los partidos de grupo.</p>
+        </div>
+      `;
+      return;
     }
-  }
-
-  let html = `<h2>Cuadro Eliminatorias</h2>`;
-
-  for (const [titulo, rondas] of Object.entries(secciones)) {
-    html += `<h3 style="margin-top:30px; color:#1D9BF0;">${titulo}</h3>`;
-    html += `
-      <table>
-        <thead>
-          <tr><th>Ronda</th><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
-        </thead>
-        <tbody>
-          ${eliminatorias
-            .filter(p => rondas.includes(p["Ronda"]))
-            .map(p => `
-            <tr>
-              <td>${p["Ronda"]}</td>
-              <td>${p["Pareja 1"]}</td>
-              <td>${p["Pareja 2"]}</td>
-              <td>${formatearFecha(p["Resultado"])}</td>
-              <td><strong>${p["Ganador"] || ""}</strong></td>
-            </tr>`).join("")}
-        </tbody>
-      </table>
-    `;
-  }
-
-  grupoContent.innerHTML = html;
-  return;
-}
-
 
     const resultados = datosGlobal["resultados" + grupo] || [];
     const clasificacion = datosGlobal["clasificacion" + grupo] || [];
@@ -162,9 +181,7 @@
       <h2>Resultados - Grupo ${grupo}</h2>
       <table>
         <thead>
-          <tr>
-            <th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th>
-          </tr>
+          <tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr>
         </thead>
         <tbody>
           ${resultados.map(p => `
@@ -201,6 +218,23 @@
         </tbody>
       </table>
     `;
+  }
+
+  function generarEliminatoriasDesdeHTML() {
+    fetch(url, {
+      method: "POST",
+      body: new URLSearchParams({ action: "generarEliminatorias" }),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    })
+    .then(res => res.text())
+    .then(resp => {
+      alert("✅ Cuadro generado correctamente.");
+      location.reload();
+    })
+    .catch(err => {
+      alert("❌ Error al generar el cuadro.");
+      console.error(err);
+    });
   }
 </script>
 
