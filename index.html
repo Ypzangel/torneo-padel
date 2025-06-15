@@ -166,6 +166,8 @@
     else if (grupo === "Visual") mostrarVisualBracket();
     else mostrarTablaGrupo(grupo);
   }
+// 🔁 Recargar automáticamente cada 60 segundos
+setInterval(() => location.reload(), 60000);
 
   function mostrarEliminatorias() {
     const eliminatorias = datosGlobal["eliminatorias"] || [];
@@ -186,6 +188,8 @@
       <button class="btn-generar" onclick="generarEliminatoriasDesdeHTML()">🔁 Generar Cuadro de Eliminatorias</button>
     `;
   }
+  // 🔁 Recargar automáticamente cada 60 segundos
+setInterval(() => location.reload(), 60000);
 
   function mostrarVisualBracket() {
     const eliminatorias = datosGlobal["eliminatorias"] || [];
@@ -218,6 +222,8 @@
       </div>
     `;
   }
+  // 🔁 Recargar automáticamente cada 60 segundos
+setInterval(() => location.reload(), 60000);
 
   function mostrarTablaGrupo(grupo) {
     const resultados = datosGlobal["resultados" + grupo] || [];
@@ -241,6 +247,8 @@
       </table>
     `;
   }
+// 🔁 Recargar automáticamente cada 60 segundos
+setInterval(() => location.reload(), 60000);
 
   function generarEliminatoriasDesdeHTML() {
     const clave = prompt("Introduce el código para generar el cuadro:");
@@ -251,6 +259,8 @@
       headers: { "Content-Type": "application/x-www-form-urlencoded" }
     }).then(() => location.reload()).catch(err => console.error(err));
   }
+// 🔁 Recargar automáticamente cada 60 segundos
+setInterval(() => location.reload(), 60000);
 </script>
 
 </body>
