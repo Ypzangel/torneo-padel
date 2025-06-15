@@ -1,35 +1,32 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Torneo Wilson | El Rincón del Pádel</title>
+  <title>Torneo Wilson | El Rinc贸n del P谩del</title>
   <style>
     :root {
       --azul: #1D9BF0;
       --gris-claro: #f9f9f9;
       --texto: #333;
     }
-
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       background-color: var(--gris-claro);
       color: var(--texto);
     }
-
     header {
       background-color: var(--azul);
       color: white;
       padding: 1rem;
       text-align: center;
     }
-
     h1 {
       margin: 0;
       font-size: 1.5rem;
     }
-
     .tabs {
       display: flex;
       flex-wrap: wrap;
@@ -37,7 +34,6 @@
       background: #e6f2fb;
       border-bottom: 2px solid var(--azul);
     }
-
     .tabs button {
       background: none;
       border: none;
@@ -48,36 +44,30 @@
       flex: 1 1 auto;
       min-width: 100px;
     }
-
     .tabs button.active {
       border-bottom: 4px solid var(--azul);
       color: #0b4d91;
     }
-
     .content {
       padding: 1rem;
       overflow-x: auto;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
       min-width: 500px;
     }
-
     th, td {
       border: 1px solid #ccc;
       padding: 8px;
       text-align: center;
       font-size: 0.95rem;
     }
-
     th {
       background-color: var(--azul);
       color: white;
     }
-
     .btn-generar {
       padding: 1rem 2rem;
       font-size: 1rem;
@@ -89,7 +79,6 @@
       margin: 2rem auto;
       display: block;
     }
-
     .bracket {
       display: flex;
       justify-content: center;
@@ -97,14 +86,12 @@
       gap: 2rem;
       margin-top: 2rem;
     }
-
     .round {
       display: flex;
       flex-direction: column;
       gap: 1rem;
       min-width: 200px;
     }
-
     .match {
       border: 2px solid var(--azul);
       border-radius: 8px;
@@ -113,7 +100,6 @@
       box-shadow: 2px 2px 4px #ccc;
       text-align: center;
     }
-
     @media screen and (max-width: 600px) {
       h1 { font-size: 1.2rem; }
       .tabs button { padding: 0.7rem; font-size: 0.9rem; }
@@ -122,11 +108,9 @@
   </style>
 </head>
 <body>
-
 <header>
-  <h1>Torneo Wilson | El Rincón del Pádel</h1>
+  <h1>Torneo Wilson | El Rinc贸n del P谩del</h1>
 </header>
-
 <div class="tabs">
   <button class="tab-button" data-group="A">Grupo A</button>
   <button class="tab-button" data-group="B">Grupo B</button>
@@ -135,17 +119,16 @@
   <button class="tab-button" data-group="Eliminatorias">Eliminatorias</button>
   <button class="tab-button" data-group="Visual">Visual Bracket</button>
 </div>
-
 <div class="content">
   <div id="grupo-content"></div>
 </div>
-
 <script>
   const url = "https://script.google.com/macros/s/AKfycbyzqUYL4ZttcbVDwuL7nhLmoFDLim3TpsL6Bc21GyKXVVkto5Ayq39qdTmTfXKArGpl/exec";
   const grupoContent = document.getElementById("grupo-content");
   const tabs = document.querySelectorAll(".tab-button");
   let datosGlobal = {};
 
+  const grupoActivo = localStorage.getItem("grupoActivo") || "A";
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
       tabs.forEach(t => t.classList.remove("active"));
@@ -156,15 +139,18 @@
     });
   });
 
+  function activarTab(grupo) {
+    tabs.forEach(t => {
+      if (t.dataset.group === grupo) t.classList.add("active");
+    });
+  }
+
   fetch(url)
     .then(res => res.json())
     .then(data => {
       datosGlobal = data;
-      const grupoGuardado = localStorage.getItem("grupoActivo") || "A";
-      tabs.forEach(t => t.classList.remove("active"));
-      const activo = Array.from(tabs).find(t => t.dataset.group === grupoGuardado);
-      if (activo) activo.classList.add("active");
-      mostrarGrupo(grupoGuardado);
+      activarTab(grupoActivo);
+      mostrarGrupo(grupoActivo);
     });
 
   setInterval(() => location.reload(), 60000);
@@ -188,8 +174,8 @@
       <h2>Cuadro Eliminatorias</h2>
       ${tabla("Semifinales", ["Semifinal 1", "Semifinal 2"])}
       ${tabla("Final", ["Final"])}
-      ${tabla("Consolación", ["Semifinal Consolación 1", "Semifinal Consolación 2", "Final Consolación"])}
-      <button class="btn-generar" onclick="generarEliminatoriasDesdeHTML()">?? Generar Cuadro de Eliminatorias</button>
+      ${tabla("Consolaci贸n", ["Semifinal Consolaci贸n 1", "Semifinal Consolaci贸n 2", "Final Consolaci贸n"])}
+      <button class="btn-generar" onclick="generarEliminatoriasDesdeHTML()">馃攣 Generar Cuadro de Eliminatorias</button>
     `;
   }
 
@@ -203,24 +189,10 @@
     grupoContent.innerHTML = `
       <h2 style="text-align:center">Visual Bracket</h2>
       <div class="bracket">
-        <div class="round">
-          <h3>Semifinales</h3>
-          ${matchHTML("Semifinal 1")}
-          ${matchHTML("Semifinal 2")}
-        </div>
-        <div class="round">
-          <h3>Final</h3>
-          ${matchHTML("Final")}
-        </div>
-        <div class="round">
-          <h3>Semis Consolación</h3>
-          ${matchHTML("Semifinal Consolación 1")}
-          ${matchHTML("Semifinal Consolación 2")}
-        </div>
-        <div class="round">
-          <h3>Final Consolación</h3>
-          ${matchHTML("Final Consolación")}
-        </div>
+        <div class="round"><h3>Semifinales</h3>${matchHTML("Semifinal 1")}${matchHTML("Semifinal 2")}</div>
+        <div class="round"><h3>Final</h3>${matchHTML("Final")}</div>
+        <div class="round"><h3>Semis Consolaci贸n</h3>${matchHTML("Semifinal Consolaci贸n 1")}${matchHTML("Semifinal Consolaci贸n 2")}</div>
+        <div class="round"><h3>Final Consolaci贸n</h3>${matchHTML("Final Consolaci贸n")}</div>
       </div>
     `;
   }
@@ -231,26 +203,17 @@
 
     grupoContent.innerHTML = `
       <h2>Resultados - Grupo ${grupo}</h2>
-      <table>
-        <thead><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr></thead>
-        <tbody>
-          ${resultados.map(p => `<tr><td>${p['Pareja 1']}</td><td>${p['Pareja 2']}</td><td>${p['Resultado']}</td><td>${p['Ganador']}</td></tr>`).join('')}
-        </tbody>
-      </table>
-      <h2>Clasificación - Grupo ${grupo}</h2>
-      <table>
-        <thead><tr><th>Pareja</th><th>PJ</th><th>PG</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr></thead>
-        <tbody>
-          ${clasificacion.sort((a,b) => b["PG"] - a["PG"] || b["Juegos Ganados"] - a["Juegos Ganados"] || b["Diferencia"] - a["Diferencia"])
-            .map(p => `<tr><td>${p['Pareja']}</td><td>${p['PJ']}</td><td>${p['PG']}</td><td>${p['Juegos Ganados']}</td><td>${p['Juegos Perdidos']}</td><td>${p['Diferencia']}</td></tr>`).join('')}
-        </tbody>
-      </table>
+      <table><thead><tr><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr></thead>
+      <tbody>${resultados.map(p => `<tr><td>${p['Pareja 1']}</td><td>${p['Pareja 2']}</td><td>${p['Resultado']}</td><td>${p['Ganador']}</td></tr>`).join('')}</tbody></table>
+      <h2>Clasificaci贸n - Grupo ${grupo}</h2>
+      <table><thead><tr><th>Pareja</th><th>PJ</th><th>PG</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr></thead>
+      <tbody>${clasificacion.sort((a,b) => b["PG"] - a["PG"] || b["Juegos Ganados"] - a["Juegos Ganados"] || b["Diferencia"] - a["Diferencia"]).map(p => `<tr><td>${p['Pareja']}</td><td>${p['PJ']}</td><td>${p['PG']}</td><td>${p['Juegos Ganados']}</td><td>${p['Juegos Perdidos']}</td><td>${p['Diferencia']}</td></tr>`).join('')}</tbody></table>
     `;
   }
 
   function generarEliminatoriasDesdeHTML() {
-    const clave = prompt("Introduce el código para generar el cuadro:");
-    if (clave !== "admin2024") return alert("Código incorrecto");
+    const clave = prompt("Introduce el c贸digo para generar el cuadro:");
+    if (clave !== "admin2024") return alert("C贸digo incorrecto");
     fetch(url, {
       method: "POST",
       body: new URLSearchParams({ action: "generarEliminatorias" }),
@@ -258,7 +221,5 @@
     }).then(() => location.reload()).catch(err => console.error(err));
   }
 </script>
-
 </body>
 </html>
-
