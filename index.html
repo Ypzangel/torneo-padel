@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Torneo Wilson | El Rinc贸n del P谩del</title>
+  <title>Torneo Wilson | El Rincón del Pádel</title>
   <style>
     :root {
       --azul: #1D9BF0;
@@ -124,11 +124,11 @@
 <body>
 
 <header>
-  <h1>Torneo Wilson | El Rinc贸n del P谩del</h1>
+  <h1>Torneo Wilson | El Rincón del Pádel</h1>
 </header>
 
 <div class="tabs">
-  <button class="tab-button active" data-group="A">Grupo A</button>
+  <button class="tab-button" data-group="A">Grupo A</button>
   <button class="tab-button" data-group="B">Grupo B</button>
   <button class="tab-button" data-group="C">Grupo C</button>
   <button class="tab-button" data-group="D">Grupo D</button>
@@ -150,7 +150,9 @@
     tab.addEventListener("click", () => {
       tabs.forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
-      mostrarGrupo(tab.dataset.group);
+      const grupo = tab.dataset.group;
+      localStorage.setItem("grupoActivo", grupo);
+      mostrarGrupo(grupo);
     });
   });
 
@@ -158,21 +160,23 @@
     .then(res => res.json())
     .then(data => {
       datosGlobal = data;
-      mostrarGrupo("A");
+      const grupoGuardado = localStorage.getItem("grupoActivo") || "A";
+      tabs.forEach(t => t.classList.remove("active"));
+      const activo = Array.from(tabs).find(t => t.dataset.group === grupoGuardado);
+      if (activo) activo.classList.add("active");
+      mostrarGrupo(grupoGuardado);
     });
+
+  setInterval(() => location.reload(), 60000);
 
   function mostrarGrupo(grupo) {
     if (grupo === "Eliminatorias") mostrarEliminatorias();
     else if (grupo === "Visual") mostrarVisualBracket();
     else mostrarTablaGrupo(grupo);
   }
-// 馃攣 Recargar autom谩ticamente cada 60 segundos
-setInterval(() => location.reload(), 60000);
 
   function mostrarEliminatorias() {
     const eliminatorias = datosGlobal["eliminatorias"] || [];
-    const rondas = ["Semifinal 1", "Semifinal 2", "Final", "Semifinal Consolaci贸n 1", "Semifinal Consolaci贸n 2", "Final Consolaci贸n"];
-
     const tabla = (titulo, claves) => `
       <h3>${titulo}</h3>
       <table><thead><tr><th>Ronda</th><th>Pareja 1</th><th>Pareja 2</th><th>Resultado</th><th>Ganador</th></tr></thead><tbody>
@@ -184,12 +188,10 @@ setInterval(() => location.reload(), 60000);
       <h2>Cuadro Eliminatorias</h2>
       ${tabla("Semifinales", ["Semifinal 1", "Semifinal 2"])}
       ${tabla("Final", ["Final"])}
-      ${tabla("Consolaci贸n", ["Semifinal Consolaci贸n 1", "Semifinal Consolaci贸n 2", "Final Consolaci贸n"])}
-      <button class="btn-generar" onclick="generarEliminatoriasDesdeHTML()">馃攣 Generar Cuadro de Eliminatorias</button>
+      ${tabla("Consolación", ["Semifinal Consolación 1", "Semifinal Consolación 2", "Final Consolación"])}
+      <button class="btn-generar" onclick="generarEliminatoriasDesdeHTML()">?? Generar Cuadro de Eliminatorias</button>
     `;
   }
-  // 馃攣 Recargar autom谩ticamente cada 60 segundos
-setInterval(() => location.reload(), 60000);
 
   function mostrarVisualBracket() {
     const eliminatorias = datosGlobal["eliminatorias"] || [];
@@ -211,19 +213,17 @@ setInterval(() => location.reload(), 60000);
           ${matchHTML("Final")}
         </div>
         <div class="round">
-          <h3>Semis Consolaci贸n</h3>
-          ${matchHTML("Semifinal Consolaci贸n 1")}
-          ${matchHTML("Semifinal Consolaci贸n 2")}
+          <h3>Semis Consolación</h3>
+          ${matchHTML("Semifinal Consolación 1")}
+          ${matchHTML("Semifinal Consolación 2")}
         </div>
         <div class="round">
-          <h3>Final Consolaci贸n</h3>
-          ${matchHTML("Final Consolaci贸n")}
+          <h3>Final Consolación</h3>
+          ${matchHTML("Final Consolación")}
         </div>
       </div>
     `;
   }
-  // 馃攣 Recargar autom谩ticamente cada 60 segundos
-setInterval(() => location.reload(), 60000);
 
   function mostrarTablaGrupo(grupo) {
     const resultados = datosGlobal["resultados" + grupo] || [];
@@ -237,7 +237,7 @@ setInterval(() => location.reload(), 60000);
           ${resultados.map(p => `<tr><td>${p['Pareja 1']}</td><td>${p['Pareja 2']}</td><td>${p['Resultado']}</td><td>${p['Ganador']}</td></tr>`).join('')}
         </tbody>
       </table>
-      <h2>Clasificaci贸n - Grupo ${grupo}</h2>
+      <h2>Clasificación - Grupo ${grupo}</h2>
       <table>
         <thead><tr><th>Pareja</th><th>PJ</th><th>PG</th><th>Juegos Ganados</th><th>Juegos Perdidos</th><th>Diferencia</th></tr></thead>
         <tbody>
@@ -247,20 +247,16 @@ setInterval(() => location.reload(), 60000);
       </table>
     `;
   }
-// 馃攣 Recargar autom谩ticamente cada 60 segundos
-setInterval(() => location.reload(), 60000);
 
   function generarEliminatoriasDesdeHTML() {
-    const clave = prompt("Introduce el c贸digo para generar el cuadro:");
-    if (clave !== "admin2024") return alert("C贸digo incorrecto");
+    const clave = prompt("Introduce el código para generar el cuadro:");
+    if (clave !== "admin2024") return alert("Código incorrecto");
     fetch(url, {
       method: "POST",
       body: new URLSearchParams({ action: "generarEliminatorias" }),
       headers: { "Content-Type": "application/x-www-form-urlencoded" }
     }).then(() => location.reload()).catch(err => console.error(err));
   }
-// 馃攣 Recargar autom谩ticamente cada 60 segundos
-setInterval(() => location.reload(), 60000);
 </script>
 
 </body>
